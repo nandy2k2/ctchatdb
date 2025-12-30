@@ -296,6 +296,7 @@ app.get("/api/v2/getavailabletestsds1", testdsctlr1.getavailabletestsds1);
 app.get("/api/v2/gettesteliiblestudents1/:testid", testdsctlr1.gettesteliiblestudents1);
 app.post("/api/v2/allowstudentretake1", testdsctlr1.allowstudentretake1);
 app.get("/api/v2/checkstudenteligibility1/:testid/:studentid", testdsctlr1.checkstudenteligibility1);
+app.post("/api/v2/updatetestquestionsds1", testdsctlr1.updatetestquestionsds1);
 
 // API Key Management Routes
 app.post("/api/v2/createapikeyds1", testdsctlr1.createapikeyds1);

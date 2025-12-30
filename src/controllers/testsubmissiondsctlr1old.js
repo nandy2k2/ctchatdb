@@ -201,7 +201,7 @@ exports.starttestds1 = async (req, res) => {
 // Submit Answer (Optimized)
 exports.submitanswerds1 = async (req, res) => {
   try {
-    const { testid, studentid, colid, questionnumber,selectedanswerkey, selectedanswer, timespent, section } = req.body;
+    const { testid, studentid, colid, questionnumber, selectedanswer, timespent, section } = req.body;
 
     // Use aggregation to update answer efficiently
     const updateResult = await testsubmissionds1.updateOne(
@@ -215,7 +215,7 @@ exports.submitanswerds1 = async (req, res) => {
         $push: {
           answers: {
             questionnumber,
-            selectedanswer: selectedanswerkey,
+            selectedanswer,
             timespent,
             section: section || null,
             iscorrect: false,
@@ -240,7 +240,7 @@ exports.submitanswerds1 = async (req, res) => {
         },
         {
           $set: {
-            'answers.$.selectedanswer': selectedanswerkey,
+            'answers.$.selectedanswer': selectedanswer,
             'answers.$.timespent': timespent,
             'answers.$.section': section || null,
             status: 'in-progress',

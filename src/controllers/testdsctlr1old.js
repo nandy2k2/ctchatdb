@@ -12,7 +12,7 @@ exports.createtestds1 = async (req, res) => {
     const {
       name, user, colid, classid, course, coursecode, testtitle, description,
       topic, scheduleddate, starttime, endtime, duration, totalnoofquestion,
-      questions, sections, sectionBased, shufflequestions, showresultsimmediately,
+      questions, sections, sectionBased, shufflequestions, showresultsimmediately, 
       allowretake, passingscore, timelimit, proctoringmode, calculatorallowed,
       formulasheetallowed, instructions, rules, status, ispublished, year
     } = req.body;
@@ -22,8 +22,8 @@ exports.createtestds1 = async (req, res) => {
       name, user, colid, classid, course, coursecode, testtitle, description,
       topic, scheduleddate, starttime, endtime, duration, totalnoofquestion,
       questions, sections: sections || [], sectionBased: sectionBased || false,
-      shufflequestions, showresultsimmediately, allowretake, passingscore,
-      timelimit, proctoringmode, calculatorallowed, formulasheetallowed,
+      shufflequestions, showresultsimmediately, allowretake, passingscore, 
+      timelimit, proctoringmode, calculatorallowed, formulasheetallowed, 
       instructions, rules, status, ispublished, updatedat: new Date(), year
     };
 
@@ -45,7 +45,7 @@ exports.createtestds1 = async (req, res) => {
 exports.gettestsbyuser1 = async (req, res) => {
   try {
     const { colid, user } = req.query;
-
+    
     const pipeline = [
       { $match: { colid: parseInt(colid), user: user } },
       { $sort: { createdat: -1 } },
@@ -155,17 +155,17 @@ exports.gettesteliiblestudents1 = async (req, res) => {
     ];
 
     const result = await testds1.aggregate(testPipeline);
-
+    
     if (!result.length) {
       return res.status(404).json({ success: false, message: 'Test not found' });
     }
 
     const testData = result[0];
-
+    
     // Process submissions to create submission counts manually
     const submissionCounts = {};
     const submissionData = {};
-
+    
     testData.allSubmissions.forEach(submission => {
       // Check all possible identifier fields
       const identifiers = [
@@ -175,15 +175,15 @@ exports.gettesteliiblestudents1 = async (req, res) => {
         submission.name,
         submission.email
       ].filter(id => id && id.toString().trim() !== '');
-
+      
       // Increment count for all valid identifiers
       identifiers.forEach(id => {
         const key = id.toString();
         submissionCounts[key] = (submissionCounts[key] || 0) + 1;
-
+        
         // Store latest submission data
-        if (!submissionData[key] ||
-          new Date(submission.createdat) > new Date(submissionData[key].createdat)) {
+        if (!submissionData[key] || 
+            new Date(submission.createdat) > new Date(submissionData[key].createdat)) {
           submissionData[key] = submission;
         }
       });
@@ -232,14 +232,14 @@ exports.gettesteliiblestudents1 = async (req, res) => {
           }
         }
       }
-
+      
       return latestSubmission;
     };
 
     const eligibleStudents = testData.enrolledStudents.map(student => {
       const submissionCount = getSubmissionCount(student);
       const latestSubmission = getLatestSubmission(student);
-
+      
       return {
         studentId: student.regno || student.email || student.student,
         studentName: student.student,
@@ -321,9 +321,9 @@ exports.allowstudentretake1 = async (req, res) => {
       { $match: { regno: studentid } },
       { $project: { email: 1 } }
     ];
-
+    
     const userResult = await User.aggregate(userPipeline);
-
+    
     if (!userResult.length) {
       return res.status(404).json({
         success: false,
@@ -366,7 +366,7 @@ exports.updatetestds1 = async (req, res) => {
   try {
     const { id, name, user, colid, classid, course, coursecode, testtitle, description,
       topic, scheduleddate, starttime, endtime, duration, totalnoofquestion,
-      questions, sections, sectionBased, shufflequestions, showresultsimmediately,
+      questions, sections, sectionBased, shufflequestions, showresultsimmediately, 
       allowretake, passingscore, timelimit, proctoringmode, calculatorallowed,
       formulasheetallowed, instructions, rules, status, ispublished } = req.body;
 
@@ -376,8 +376,8 @@ exports.updatetestds1 = async (req, res) => {
         name, user, colid, classid, course, coursecode, testtitle, description,
         topic, scheduleddate, starttime, endtime, duration, totalnoofquestion,
         questions, sections: sections || [], sectionBased: sectionBased || false,
-        shufflequestions, showresultsimmediately, allowretake, passingscore,
-        timelimit, proctoringmode, calculatorallowed, formulasheetallowed,
+        shufflequestions, showresultsimmediately, allowretake, passingscore, 
+        timelimit, proctoringmode, calculatorallowed, formulasheetallowed, 
         instructions, rules, status, ispublished, updatedat: new Date()
       },
       { new: true }
@@ -453,7 +453,7 @@ exports.createapikeyds1 = async (req, res) => {
     const update = {
       name, user, colid, facultyid, defaultapikey, personalapikey,
       usepersonalkey, apikeyname, personalapikeyname, monthlylimit,
-      currentusage, isactive,
+      currentusage, isactive, 
       youtubeapikey: youtubeapikey || '',
       youtubequotaused: youtubequotaused || 0,
       youtubequotalimit: youtubequotalimit || 10000, updatedat: new Date()
@@ -710,45 +710,5 @@ exports.checkstudenteligibility1 = async (req, res) => {
     });
   } catch (error) {
     // res.status(400).json({ success: false, message: error.message });
-  }
-};
-
-// Update test questions only
-exports.updatetestquestionsds1 = async (req, res) => {
-  try {
-    const { testid, questions, colid, user } = req.body;
-
-    // Validate ownership
-    const test = await testds1.findOne({
-      _id: testid,
-      colid: parseInt(colid),
-      user: user
-    });
-
-    if (!test) {
-      return res.status(404).json({
-        success: false,
-        message: 'Test not found or access denied'
-      });
-    }
-
-    // Update questions
-    test.questions = questions;
-    test.totalnoofquestion = questions.length;
-    test.updatedat = new Date();
-
-    await test.save();
-
-    res.status(200).json({
-      success: true,
-      data: test,
-      message: 'Questions updated successfully'
-    });
-
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message
-    });
   }
 };
