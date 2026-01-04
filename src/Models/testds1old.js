@@ -34,9 +34,6 @@ const questionschema = new mongoose.Schema({
   },
   section: { type: String }, // NEW: Section name
   tags: [String],
-  questionimage: { type: String }, // URL to uploaded image
-  negativemarking: { type: Boolean, default: false },
-  negativemarks: { type: Number, default: 0 },
   isgenerated: { type: Boolean, default: false }
 });
 
@@ -54,10 +51,7 @@ const sectionschema = new mongoose.Schema({
     type: String,
     enum: ['easy', 'medium', 'hard'],
     default: 'medium'
-  },
-  marksPerQuestion: { type: Number, default: 1 },
-  negativeMarkingEnabled: { type: Boolean, default: false },
-  negativeMarks: { type: Number, default: 0 }
+  }
 });
 
 // Test schema (Updated)
@@ -76,11 +70,11 @@ const testschema = new mongoose.Schema({
   endtime: { type: Date, required: [true, 'Please enter end time'] },
   duration: { type: Number, required: [true, 'Please enter duration in minutes'] },
   totalnoofquestion: { type: Number, required: [true, 'Please enter total number of questions'] },
-
+  
   // NEW FIELDS
   sectionBased: { type: Boolean, default: false },
   sections: [sectionschema],
-
+  
   questions: [questionschema],
   shufflequestions: { type: Boolean, default: false },
   showresultsimmediately: { type: Boolean, default: true },
@@ -90,10 +84,6 @@ const testschema = new mongoose.Schema({
   proctoringmode: { type: Boolean, default: false },
   calculatorallowed: { type: Boolean, default: false },
   formulasheetallowed: { type: Boolean, default: false },
-  globalNegativeMarking: { type: Boolean, default: false },
-  globalNegativeMarks: { type: Number, default: 0 },
-  allowResume: { type: Boolean, default: false }, // Allow students to resume
-  resumeTimeLimit: { type: Number, default: 24 }, // Hours to allow resume
   aigenerationprompt: { type: String },
   chatgptapikey: { type: String },
   generationdate: { type: Date },
@@ -115,7 +105,7 @@ const testschema = new mongoose.Schema({
   minscore: { type: Number, default: 0 },
   createdat: { type: Date, default: Date.now },
   updatedat: { type: Date, default: Date.now },
-  year: { type: String }
+  year: {type: String}
 });
 
 const testds1 = mongoose.model('testds1', testschema);

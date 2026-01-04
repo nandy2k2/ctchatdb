@@ -7,12 +7,10 @@ const answerschema = new mongoose.Schema({
     required: [true, 'Please enter question number']
   },
   selectedanswer: { type: String },
-  selectedanswerkey: { type: String },
   iscorrect: { type: Boolean, default: false },
   points: { type: Number, default: 0 },
   timespent: { type: Number, default: 0 },
-  section: { type: String }, // NEW: Section name
-  negativeMarksApplied: { type: Number, default: 0 }
+  section: { type: String } // NEW: Section name
 });
 
 // Section score schema - NEW
@@ -47,22 +45,15 @@ const testsubmissionschema = new mongoose.Schema({
     enum: ['started', 'in-progress', 'submitted', 'auto-submitted', 'graded'],
     default: 'started'
   },
-
+  
   // NEW FIELDS for section-based tests
   sectionBased: { type: Boolean, default: false },
   sectionScores: [sectionscoreshema],
-
+  
   tabswitches: { type: Number, default: 0 },
   warnings: [String],
   suspiciousactivity: { type: Boolean, default: false },
   submissiondate: { type: Date },
-  lastQuestionAttempted: { type: Number, default: 0 },
-  resumeAllowed: { type: Boolean, default: false },
-  resumePermissionGrantedBy: { type: String },
-  resumePermissionGrantedAt: { type: Date },
-  sessionTerminatedAt: { type: Date },
-  canResume: { type: Boolean, default: false },
-  resumeCount: { type: Number, default: 0 },
   createdat: { type: Date, default: Date.now },
   updatedat: { type: Date, default: Date.now }
 });

@@ -588,6 +588,8 @@ exports.generatequestionsds1 = async (req, res) => {
     const logFilter = { testid, colid, user };
     const logUpdate = {
       name, user, testid, facultyid: user, colid,
+      prompt, topic, difficulty, questioncount,
+      tokensused: tokensused || 0,
       cost: cost || 0,
       success: true,
       generatedat: new Date(),
@@ -598,28 +600,16 @@ exports.generatequestionsds1 = async (req, res) => {
       new: true, upsert: true, setDefaultsOnInsert: true
     });
 
-    // Also push to test if testid is provided
-    if (testid) {
-      await testds1.findOneAndUpdate(
-        { _id: testid, colid: parseInt(colid), user: user },
-        {
-          $push: { questions: { $each: generatedquestions } },
-          $inc: { totalnoofquestion: questioncount },
-          updatedat: new Date()
-        }
-      );
-    }
-
     res.status(200).json({
       success: true,
-      message: "Questions generated and saved successfully"
+      data: generatedquestions,
+      message: "Questions generation logged successfully"
     });
   } catch (error) {
     // res.status(400).json({ success: false, message: error.message });
   }
 };
 
-// checkstudenteligibility1 remains here
 exports.checkstudenteligibility1 = async (req, res) => {
   try {
     const { testid, studentid } = req.params;
